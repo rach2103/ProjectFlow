@@ -145,10 +145,10 @@ const ProjectsPage: React.FC = () => {
           mb={4}
         >
           <Box>
-            <Typography variant="h4" fontWeight={800} gutterBottom>
+            <Typography variant="h4" fontWeight={800} gutterBottom sx={{mb: 2}}>
               Projects
             </Typography>
-            <Typography variant="body1" color="text.secondary">
+            <Typography variant="body1" color="text.secondary" sx={{mb: 2}}>
               Manage your workspace projects, milestones, and budgets.
             </Typography>
           </Box>
@@ -164,6 +164,7 @@ const ProjectsPage: React.FC = () => {
               minWidth: 160,
               height: 48,
               boxShadow: 2,
+              mb : 3,
             }}
           >
             New Project

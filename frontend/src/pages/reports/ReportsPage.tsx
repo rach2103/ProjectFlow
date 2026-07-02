@@ -154,7 +154,7 @@ const ReportsPage: React.FC = () => {
         <Typography variant="h5" fontWeight={700} gutterBottom>
           Workspace Reports & Analytics
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           Track sprint completions, evaluate project budgets, and monitor developer workloads.
         </Typography>
       </Box>

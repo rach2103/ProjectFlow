@@ -115,7 +115,7 @@ const CollaborationPage: React.FC = () => {
           <Typography variant="h5" fontWeight={700} gutterBottom>
             Collaboration
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             Coordinate task discussions, mentions, and recent workspace alerts.
           </Typography>
         </Box>

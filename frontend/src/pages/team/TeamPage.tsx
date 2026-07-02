@@ -114,13 +114,13 @@ const TeamPage: React.FC = () => {
         <Typography variant="h5" fontWeight={700} gutterBottom>
           Team Directory
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
           Monitor workload distribution, manage employee roles, and track active task assignments.
         </Typography>
       </Box>
 
       {/* Filters Toolbar */}
-      <Box display="flex" gap={2} mb={4} flexWrap="wrap">
+      <Box display="flex" gap={2} mb={4} flexWrap="wrap" sx ={{mb : 3}}>
         <TextField
           size="small"
           placeholder="Search by name, email, or dept..."

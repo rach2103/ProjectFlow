@@ -145,12 +145,12 @@ const TimelinePage: React.FC = () => {
           <Typography variant="h5" fontWeight={700} gutterBottom>
             Project Activity Calendar
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             Track task progress, team actions, budget updates, and milestone activity in a modern calendar dashboard.
           </Typography>
         </Box>
 
-        <FormControl size="small" sx={{ minWidth: 220 }}>
+        <FormControl size="small" sx={{ minWidth: 220 ,mb: 2 }} >
           <InputLabel>Select Project</InputLabel>
           <Select
             value={projectId}

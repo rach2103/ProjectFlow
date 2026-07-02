@@ -131,12 +131,12 @@ const BudgetPage: React.FC = () => {
           <Typography variant="h5" fontWeight={700} gutterBottom>
             Budget & Expenses
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             Oversee workspace finances, log project expenses, and receive budget overrun alerts.
           </Typography>
         </Box>
 
-        <FormControl size="small" sx={{ minWidth: 200 }}>
+        <FormControl size="small" sx={{ minWidth: 200 ,mb: 2 }}>
           <InputLabel>Active Project</InputLabel>
           <Select
             value={selectedProjectId}

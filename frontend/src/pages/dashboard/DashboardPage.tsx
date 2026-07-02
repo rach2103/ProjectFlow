@@ -27,6 +27,7 @@ import AttachMoney from '@mui/icons-material/AttachMoney';
 import ArrowUpward from '@mui/icons-material/ArrowUpward';
 import ArrowDownward from '@mui/icons-material/ArrowDownward';
 import MoreVert from '@mui/icons-material/MoreVert';
+import Menu from '@mui/icons-material/Menu';
 import {
   AreaChart,
   Area,
@@ -107,7 +108,9 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, subtitle, icon, color
       <Typography variant="body2" fontWeight={600} color="text.primary" gutterBottom>
         {title}
       </Typography>
-      <Typography variant="caption" color="text.secondary">
+      <Typography variant="caption" color="text.secondary" sx={{
+    display: "block",
+    wordBreak: "break-word",}} >
         {subtitle}
       </Typography>
     </CardContent>
@@ -167,20 +170,72 @@ const DashboardPage: React.FC = () => {
 
   const totalTrackedHours = tasks.reduce((s, t) => s + (t.actualHours || 0), 0);
 
+  // Productivity: % of tasks completed out of total
+  const productivity = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  // Task Completion Trend: group tasks by month using createdAt
+  const monthlyMap: Record<string, { month: string; tasks: number; completed: number }> = {};
+  tasks.forEach((t) => {
+    const d = new Date(t.createdAt);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const label = d.toLocaleString('default', { month: 'short', year: '2-digit' });
+    if (!monthlyMap[key]) monthlyMap[key] = { month: label, tasks: 0, completed: 0 };
+    monthlyMap[key].tasks += 1;
+    if (t.status === 'completed') monthlyMap[key].completed += 1;
+  });
+  const taskTrendData = Object.keys(monthlyMap).sort().map((k) => monthlyMap[k]);
+
+  // Task Status Breakdown for Pie
+  const statusCounts: Record<string, number> = {};
+  tasks.forEach((t) => { statusCounts[t.status] = (statusCounts[t.status] || 0) + 1; });
+  const PIE_COLORS: Record<string, string> = {
+    completed: '#2e7d32', in_progress: '#1976d2', review: '#ed6c02', todo: '#9e9e9e', testing: '#9c27b0',
+  };
+  const pieData = Object.entries(statusCounts).map(([status, value]) => ({
+    name: status.replace('_', ' '),
+    value,
+    color: PIE_COLORS[status] || '#1976d2',
+  }));
+
+  // Team Workload: tasks per assignee
+  const assigneeMap: Record<string, { name: string; tasks: number; completed: number }> = {};
+  tasks.forEach((t) => {
+    t.assignees.forEach((a) => {
+      const user = typeof a === 'string' ? null : (a as any);
+      if (!user) return;
+      const id = user._id;
+      const name = `${user.firstName} ${user.lastName}`;
+      if (!assigneeMap[id]) assigneeMap[id] = { name, tasks: 0, completed: 0 };
+      assigneeMap[id].tasks += 1;
+      if (t.status === 'completed') assigneeMap[id].completed += 1;
+    });
+  });
+  const workloadData = Object.values(assigneeMap).sort((a, b) => b.tasks - a.tasks).slice(0, 8);
+  const maxWorkload = workloadData.reduce((m, d) => Math.max(m, d.tasks), 10);
+
+  const openSidebar = (action: 'toggle' | 'open' = 'toggle') => {
+    window.dispatchEvent(new CustomEvent('app:sidebar', { detail: { action } }));
+  };
+
   return (
     <Box>
       {/* Welcome Header */}
       <Box mb={3}>
-        <Typography variant="h5" fontWeight={700} gutterBottom>
-          {greeting()}, {user?.firstName}! 👋
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Box display="flex" alignItems="center" gap={1} sx={{ mb: 0.5 }}>
+          <IconButton size="small" onClick={() => openSidebar('toggle')} sx={{ p: 0.5 }}>
+            <Menu />
+          </IconButton>
+          <Typography variant="h5" fontWeight={700} gutterBottom>
+            {greeting()}, {user?.firstName}! 👋
+          </Typography>
+        </Box>
+        <Typography variant="body2" color="text.secondary" sx={{mb: 0.5}}>
           Here's what's happening with your projects today.
         </Typography>
       </Box>
 
       {/* Stats Grid */}
-      <Grid container spacing={2.5} mb={3}>
+        <Grid container spacing={2.5} mb={4}>
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard
             title="Total Projects"
@@ -252,35 +307,35 @@ const DashboardPage: React.FC = () => {
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard
             title="Productivity"
-            value={loading ? '—' : '—'}
-            subtitle="Calculated from team KPIs"
+            value={loading ? '—' : `${productivity}%`}
+            subtitle={loading ? '' : `${completedTasks} of ${totalTasks} tasks done`}
             icon={<TrendingUp />}
             color="#2e7d32"
-            trend={{ value: 4, isPositive: true }}
+            trend={{ value: productivity, isPositive: productivity >= 50 }}
           />
         </Grid>
       </Grid>
 
       {/* Charts Row */}
-      <Grid container spacing={2.5} mb={3}>
+        <Grid container spacing={2.5} mb={3} mt={2}>
         {/* Task Completion Trend */}
-        <Grid item xs={12} lg={8}>
-          <Card sx={{ height: 340 }}>
+        <Grid item xs={12} md={4}>
+          <Card sx={{ height: 400 }}>
             <CardContent sx={{ height: '100%' }}>
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+              <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
                 <Box>
-                  <Typography variant="h6" fontWeight={800}>
+                  <Typography variant="h6" fontWeight={800} sx={{ mt: 2 }}>
                     Task Completion Trend
                   </Typography>
-                  <Typography variant="caption" color="text.secondary" textTransform="uppercase" letterSpacing="0.05em">
+                  <Typography variant="caption" color="text.secondary" textTransform="uppercase" letterSpacing="0.05em" sx={{mb: 1}}>
                     Monthly overview
                   </Typography>
                 </Box>
                 <Tooltip title="More options"><IconButton size="small"><MoreVert /></IconButton></Tooltip>
               </Box>
-              <Box sx={{ width: '100%', height: 260 }}>
+              <Box sx={{ width: '100%', height: 300 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={/* use tasks per month derived from API */ []} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                <AreaChart data={taskTrendData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
                   <defs>
                     <linearGradient id="tasksGrad" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#1976d2" stopOpacity={0.3} />
@@ -306,62 +361,65 @@ const DashboardPage: React.FC = () => {
         </Grid>
 
         {/* Task Status Breakdown */}
-        <Grid item xs={12} lg={4}>
-          <Card sx={{ height: 340 }}>
+        <Grid item xs={12} mt={4}>
+          <Card sx={{ height: 400 }}>
             <CardContent sx={{ height: '100%' }}>
-              <Typography variant="h6" fontWeight={800} gutterBottom>
+              <Typography variant="h6" fontWeight={800} gutterBottom sx={{ mt: 2 }}>
                 Task Status
               </Typography>
               <Typography variant="caption" color="text.secondary" textTransform="uppercase" letterSpacing="0.05em">
                 Current sprint
               </Typography>
-              <Box sx={{ width: '100%', height: 220 }}>
+              <Box sx={{ width: '100%', height: 260 }}>
                 <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={[]}
+                    data={pieData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={55}
-                    outerRadius={90}
+                    innerRadius={60}
+                    outerRadius={100}
                     paddingAngle={3}
                     dataKey="value"
-                  />
+                  >
+                    {pieData.map((entry, i) => (
+                      <Cell key={i} fill={entry.color} />
+                    ))}
+                  </Pie>
                   <RechartsTooltip />
                 </PieChart>
               </ResponsiveContainer>
               </Box>
-              <Box display="flex" flexWrap="wrap" gap={1} justifyContent="center" mt={2}>
-                {/* status chips will be populated when data available */}
-                {!loading ? (
-                  ['Completed', 'In Progress', 'Review', 'Todo'].map((n) => (
-                    <Chip key={n} label={n} size="small" sx={{ fontWeight: 600, fontSize: 11 }} />
-                  ))
-                ) : null}
+              <Box display="flex" flexWrap="wrap" gap={1} justifyContent="center" mt={1}>
+                {pieData.map((d) => (
+                  <Chip key={d.name} label={`${d.name} (${d.value})`} size="small"
+                    sx={{ fontWeight: 600, fontSize: 11, bgcolor: `${d.color}20`, color: d.color }} />
+                ))}
               </Box>
             </CardContent>
           </Card>
         </Grid>
 
         {/* Team Workload */}
-        <Grid item xs={12} lg={6}>
-          <Card sx={{ height: '100%' }}>
-            <CardContent>
-              <Typography variant="h6" fontWeight={800} gutterBottom>
+        <Grid item xs={12} mt={4}>
+          <Card sx={{ height: 400 }}>
+            <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <Typography variant="h6" fontWeight={800} gutterBottom sx={{ mt: 2 }}>
                 Team Workload
               </Typography>
-              <Typography variant="caption" color="text.secondary" display="block" mb={3} textTransform="uppercase" letterSpacing="0.05em">
+              <Typography variant="caption" color="text.secondary" display="block" mb={1} textTransform="uppercase" letterSpacing="0.05em">
                 Current task distribution
               </Typography>
-              <Box sx={{ width: '100%', height: 260 }}>
+              <Box sx={{ flex: 1, width: '100%', minHeight: 0 }}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={[] /* derived from tasks/assignees when needed */} layout="vertical" margin={{ left: 20 }}>
+                <BarChart data={workloadData} layout="vertical" margin={{ top: 0, right: 20, left: 10, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                  <XAxis type="number" domain={[0, 10]} tick={{ fontSize: 12 }} />
-                  <YAxis type="category" dataKey="name" tick={{ fontSize: 12 }} width={60} />
+                  <XAxis type="number" domain={[0, maxWorkload]} tick={{ fontSize: 11 }} />
+                  <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={80} />
                   <RechartsTooltip />
-                  <Bar dataKey="tasks" fill="#1976d2" radius={[0, 4, 4, 0]} name="Active Tasks" />
-                  <Bar dataKey="capacity" fill="#e3f2fd" radius={[0, 4, 4, 0]} name="Capacity" />
+                  <Legend />
+                  <Bar dataKey="tasks" fill="#1976d2" radius={[0, 4, 4, 0]} name="Total Tasks" />
+                  <Bar dataKey="completed" fill="#2e7d32" radius={[0, 4, 4, 0]} name="Completed" />
                 </BarChart>
               </ResponsiveContainer>
               </Box>

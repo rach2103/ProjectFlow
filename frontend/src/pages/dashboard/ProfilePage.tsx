@@ -107,92 +107,99 @@ const ProfilePage: React.FC = () => {
 
       <Grid container spacing={3}>
         {/* Avatar & Basic Info Card */}
-        <Grid item xs={12} md={4}>
-          <Card>
-            <CardContent sx={{ textAlign: 'center', p: 3 }}>
-              <Box position="relative" display="inline-block" mb={2}>
-                <Avatar
-                  src={user?.avatar}
-                  sx={{ width: 100, height: 100, fontSize: 36, mx: 'auto' }}
-                >
-                  {user?.firstName?.[0]}
-                </Avatar>
-                <Tooltip title="Upload photo">
-                  <IconButton
-                    size="small"
-                    sx={{
-                      position: 'absolute',
-                      bottom: 0,
-                      right: 0,
-                      bgcolor: 'primary.main',
-                      color: 'white',
-                      '&:hover': { bgcolor: 'primary.dark' },
-                    }}
-                  >
-                    <PhotoCamera fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              </Box>
+        {/* Avatar & Basic Info Card */}
+<Grid item xs={12}>
+  <Card sx={{ width: '100%' }}>
+    <CardContent sx={{ p: 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, flexWrap: 'wrap' }}>
+        <Box sx={{ position: 'relative', flexShrink: 0 }}>
+          <Avatar
+            src={user?.avatar}
+            sx={{ width: 96, height: 96, fontSize: 36 }}
+          >
+            {user?.firstName?.[0]}
+          </Avatar>
+          <Tooltip title="Upload photo">
+            <IconButton
+              size="small"
+              sx={{
+                position: 'absolute',
+                bottom: -4,
+                right: -4,
+                bgcolor: 'primary.main',
+                color: 'white',
+                '&:hover': { bgcolor: 'primary.dark' },
+              }}
+            >
+              <PhotoCamera fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
 
-              <Typography variant="h6" fontWeight={700}>
-                {user?.firstName} {user?.lastName}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                {user?.email}
-              </Typography>
+        <Box sx={{ flex: 1, minWidth: 220 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+            <Typography variant="h6" fontWeight={700}>
+              {user?.firstName} {user?.lastName}
+            </Typography>
+            <Chip
+              label={user?.role?.replace('_', ' ')}
+              size="small"
+              sx={{
+                bgcolor: ROLE_COLORS[user?.role || 'developer'],
+                color: 'white',
+                fontWeight: 600,
+                textTransform: 'capitalize',
+              }}
+            />
+          </Box>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            {user?.email}
+          </Typography>
+          {user?.lastLogin && (
+            <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
+              Last login: {new Date(user.lastLogin).toLocaleDateString()}
+            </Typography>
+          )}
+        </Box>
+      </Box>
 
-              <Chip
-                label={user?.role?.replace('_', ' ')}
-                sx={{
-                  bgcolor: ROLE_COLORS[user?.role || 'developer'],
-                  color: 'white',
-                  fontWeight: 600,
-                  textTransform: 'capitalize',
-                  mt: 1,
-                }}
-              />
+      <Divider sx={{ my: 2.5 }} />
 
-              <Divider sx={{ my: 2 }} />
-
-              <Box textAlign="left">
-                {user?.jobTitle && (
-                  <Typography variant="body2" mb={0.5}>
-                    💼 {user.jobTitle}
-                  </Typography>
-                )}
-                {user?.department && (
-                  <Typography variant="body2" mb={0.5}>
-                    🏢 {user.department}
-                  </Typography>
-                )}
-                {user?.phone && (
-                  <Typography variant="body2" mb={0.5}>
-                    📞 {user.phone}
-                  </Typography>
-                )}
-                <Typography variant="body2" mb={0.5}>
-                  🌍 {user?.timezone || 'UTC'}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  ✅ Email {user?.isEmailVerified ? 'Verified' : 'Not Verified'}
-                </Typography>
-              </Box>
-
-              {user?.lastLogin && (
-                <Typography variant="caption" color="text.secondary" display="block" mt={2}>
-                  Last login: {new Date(user.lastLogin).toLocaleDateString()}
-                </Typography>
-              )}
-            </CardContent>
-          </Card>
+      {/* Details spread across full width, matching the grid below */}
+      <Grid container spacing={3}>
+        <Grid item xs={6} sm={4} md={2.4}>
+          <Typography variant="caption" color="text.secondary">💼 Job Title</Typography>
+          <Typography variant="body2" fontWeight={600}>{user?.jobTitle || '—'}</Typography>
         </Grid>
+        <Grid item xs={6} sm={4} md={2.4}>
+          <Typography variant="caption" color="text.secondary">🏢 Department</Typography>
+          <Typography variant="body2" fontWeight={600}>{user?.department || '—'}</Typography>
+        </Grid>
+        <Grid item xs={6} sm={4} md={2.4}>
+          <Typography variant="caption" color="text.secondary">📞 Phone</Typography>
+          <Typography variant="body2" fontWeight={600}>{user?.phone || '—'}</Typography>
+        </Grid>
+        <Grid item xs={6} sm={4} md={2.4}>
+          <Typography variant="caption" color="text.secondary">🌍 Timezone</Typography>
+          <Typography variant="body2" fontWeight={600}>{user?.timezone || 'UTC'}</Typography>
+        </Grid>
+        <Grid item xs={6} sm={4} md={2.4}>
+          <Typography variant="caption" color="text.secondary">Email Status</Typography>
+          <Typography variant="body2" fontWeight={600} color={user?.isEmailVerified ? 'success.main' : 'warning.main'}>
+            {user?.isEmailVerified ? '✅ Verified' : '⚠️ Not Verified'}
+          </Typography>
+        </Grid>
+      </Grid>
+    </CardContent>
+  </Card>
+</Grid>
 
         {/* Profile Form */}
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12}>
           <Card>
-            <CardContent sx={{ p: 3 }}>
+            <CardContent sx={{ p: 2 }}>
               <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-                <Typography variant="h6" fontWeight={700}>
+                <Typography variant="h6" fontWeight={700} sx={{mt: 1}}>
                   Profile Information
                 </Typography>
                 <Button
@@ -211,7 +218,7 @@ const ProfilePage: React.FC = () => {
                 </Button>
               </Box>
 
-              <Grid container spacing={2.5}>
+              <Grid container spacing={2.5} sx={{ mt: 1.5 }}> 
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth

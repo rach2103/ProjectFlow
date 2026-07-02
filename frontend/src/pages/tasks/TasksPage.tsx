@@ -160,7 +160,7 @@ const TasksPage: React.FC = () => {
           <Typography variant="h5" fontWeight={700} gutterBottom>
             Task Board
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
             Organize work by status, priority, project, and assignee.
           </Typography>
         </Box>
@@ -169,13 +169,13 @@ const TasksPage: React.FC = () => {
           startIcon={<Add />}
           onClick={handleOpenCreate}
           disabled={projects.length === 0}
-          sx={{ borderRadius: 2 }}
+          sx={{ borderRadius: 2 ,mb : 2}}
         >
           New Task
         </Button>
       </Box>
 
-      <Box display="flex" gap={2} flexWrap="wrap" mb={3}>
+      <Box display="flex" gap={2} flexWrap="wrap" sx={{ mb: 3 }}>
         <TextField
           size="small"
           placeholder="Search tasks..."

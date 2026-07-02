@@ -179,7 +179,7 @@ const TimeTrackingPage: React.FC = () => {
         <Typography variant="h5" fontWeight={700} gutterBottom>
           Time Tracking
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           Log spent hours, run live timers, and analyze your productivity stats.
         </Typography>
       </Box>

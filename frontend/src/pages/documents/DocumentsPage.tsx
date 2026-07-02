@@ -107,7 +107,7 @@ const DocumentsPage: React.FC = () => {
           <Typography variant="h5" fontWeight={700} gutterBottom>
             Documents
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             Manage files attached to project tasks and keep deliverables easy to find.
           </Typography>
         </Box>
@@ -116,7 +116,7 @@ const DocumentsPage: React.FC = () => {
           variant="contained"
           startIcon={<CloudUpload />}
           disabled={!selectedTaskId || uploadMutation.isPending}
-          sx={{ borderRadius: 2 }}
+          sx={{ borderRadius: 2 ,mb: 2 }}
         >
           Upload File
           <input type="file" hidden onChange={handleFileUpload} />

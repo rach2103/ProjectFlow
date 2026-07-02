@@ -41,6 +41,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import DarkMode from '@mui/icons-material/DarkMode';
 import LightMode from '@mui/icons-material/LightMode';
 import ChevronLeft from '@mui/icons-material/ChevronLeft';
+import ChevronRight from '@mui/icons-material/ChevronRight';
 import AttachMoney from '@mui/icons-material/AttachMoney';
 import AttachFile from '@mui/icons-material/AttachFile';
 import Timeline from '@mui/icons-material/Timeline';
@@ -146,6 +147,7 @@ const MainLayout: React.FC = () => {
           alignItems: 'center',
           gap: 1.5,
           minHeight: 64,
+          position: 'relative',
           borderBottom: `1px solid ${theme.palette.divider}`,
         }}
       >
@@ -177,14 +179,30 @@ const MainLayout: React.FC = () => {
           <IconButton
             onClick={() => setSidebarCollapsed((p) => !p)}
             size="small"
-            sx={{ ml: 'auto' }}
+            aria-label={sidebarCollapsed ? 'Open sidebar' : 'Collapse sidebar'}
+            sx={{
+              width: 36,
+              height: 36,
+              borderRadius: 1,
+              p: 0.5,
+              transition: 'all 0.15s',
+              boxShadow: sidebarCollapsed ? 1 : 'none',
+              bgcolor: sidebarCollapsed ? 'background.paper' : 'transparent',
+              color: sidebarCollapsed ? 'primary.main' : 'text.primary',
+              '&:hover': { transform: 'translateY(-1px)' },
+              zIndex: 2,
+              // When collapsed, position the toggle over the top-left icon area
+              position: sidebarCollapsed ? 'absolute' : 'static',
+              // center over the left icon box (padding 16 + half icon width)
+              left: sidebarCollapsed ? 16 : 'auto',
+              top: sidebarCollapsed ? 14 : 'auto',
+            }}
           >
-            <ChevronLeft
-              sx={{
-                transform: sidebarCollapsed ? 'rotate(180deg)' : 'none',
-                transition: 'transform 0.2s',
-              }}
-            />
+            {sidebarCollapsed ? (
+              <ChevronRight sx={{ transition: 'transform 0.2s', fontSize: 20 }} />
+            ) : (
+              <ChevronLeft sx={{ transition: 'transform 0.2s', fontSize: 20 }} />
+            )}
           </IconButton>
         )}
       </Box>
